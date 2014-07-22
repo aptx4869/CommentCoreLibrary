@@ -131,7 +131,7 @@ function TopCommentSpaceAllocator(w,h){
 		cmt.bottom = cmt.bottom + y;
 		return true;
 	};
-	this.setBounds = cas.setBounds;
+	this.setBounds = csa.setBounds;
 	this.add       = csa.add;
 	this.remove    = csa.remove;
 }
@@ -175,7 +175,7 @@ function BottomCommentSpaceAllocator(w,h){
 		cmt.bottom = cmt.bottom + y;
 		return true;
 	};
-	this.setBounds = cas.setBounds;
+	this.setBounds = csa.setBounds;
 	this.add       = csa.add;
 	this.remove    = csa.remove;
 }
@@ -201,7 +201,7 @@ function ReverseCommentSpaceAllocator(w,h){
 		cmt.bottom = cmt.height + y;
 		return true;
 	}
-	this.setBounds = cas.setBounds;
+	this.setBounds = csa.setBounds;
 	this.add       = csa.add;
 	this.remove    = csa.remove;
 }
