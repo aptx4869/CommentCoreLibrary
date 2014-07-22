@@ -1,8 +1,8 @@
-/** 
-Comment Space Allocators Classes
-Licensed Under MIT License
-You may create your own.
-**/
+/**
+	Comment Space Allocators Classes
+	Licensed Under MIT License
+	You may create your own.
+ **/
 function CommentSpaceAllocator(w,h){
 	this.width = w;
 	this.height = h;
@@ -45,17 +45,17 @@ function CommentSpaceAllocator(w,h){
 		}
 		this.pool = this.pools[index];
 		if(this.pool.length == 0){
-			this.pool.push(cmt);	
+			this.pool.push(cmt);
 			return 0;
 		}
 		else if(this.vCheck(0,cmt)){
 			this.pool.binsert(cmt,function(a,b){
-					if(a.bottom < b.bottom){
-						return -1;
-					}else if (a.bottom == b.bottom){
-						return 0;
-					}else{return 1;}
-				});
+				if(a.bottom < b.bottom){
+					return -1;
+				}else if (a.bottom == b.bottom){
+					return 0;
+				}else{return 1;}
+			});
 			return cmt.y;
 		}
 		var y=0;
@@ -131,9 +131,9 @@ function TopCommentSpaceAllocator(w,h){
 		cmt.bottom = cmt.bottom + y;
 		return true;
 	};
-	this.setBounds = function(w,h){csa.setBounds(w,h);};
-	this.add = function(what){csa.add(what);};
-	this.remove = function(d){csa.remove(d);};
+	this.setBounds = cas.setBounds;
+	this.add       = csa.add;
+	this.remove    = csa.remove;
 }
 function BottomCommentSpaceAllocator(w,h){
 	var csa = new CommentSpaceAllocator(w,h);
@@ -175,9 +175,9 @@ function BottomCommentSpaceAllocator(w,h){
 		cmt.bottom = cmt.bottom + y;
 		return true;
 	};
-	this.setBounds = function(w,h){csa.setBounds(w,h);};
-	this.add = function(what){csa.add(what);};
-	this.remove = function(d){csa.remove(d);};
+	this.setBounds = cas.setBounds;
+	this.add       = csa.add;
+	this.remove    = csa.remove;
 }
 function ReverseCommentSpaceAllocator(w,h){
 	var csa= new CommentSpaceAllocator(w,h);
@@ -201,37 +201,7 @@ function ReverseCommentSpaceAllocator(w,h){
 		cmt.bottom = cmt.height + y;
 		return true;
 	}
-	this.setBounds = function(w,h){csa.setBounds(w,h);};
-	this.add = function(what){csa.add(what);};
-	this.remove = function(d){csa.remove(d);};
-}
-function BottomScrollCommentSpaceAllocator(w,h){
-	var csa = new CommentSpaceAllocator(w,h);
-	csa.validateCmt = function(cmt){
-		cmt.y = csa.height - (cmt.offsetTop + cmt.offsetHeight);
-		cmt.bottom = cmt.y + cmt.offsetHeight;
-		cmt.x = cmt.offsetLeft;
-		cmt.right = cmt.offsetLeft + cmt.offsetWidth;
-		cmt.height = cmt.offsetHeight;
-		cmt.width = cmt.offsetWidth;
-		cmt.top = cmt.y;
-		cmt.left = cmt.offsetLeft;
-		return cmt;
-	};
-	csa.add = function (cmt){
-		cmt.style.top = "";
-		cmt.style.bottom = "0px";
-		csa.validateCmt(cmt);
-		cmt.style.left = csa.width + "px";
-		if(cmt.height >= csa.height){
-			cmt.cindex = csa.pools.indexOf(csa.pool);
-			cmt.style.bottom = "0px";
-		}else{
-			cmt.cindex = csa.pools.indexOf(csa.pool);
-			cmt.style.bottom = csa.setY(cmt) + "px";
-		}
-	};
-	this.setBounds = function(w,h){csa.setBounds(w,h);};
-	this.add = function(what){csa.add(what);};
-	this.remove = function(d){csa.remove(d);};
+	this.setBounds = cas.setBounds;
+	this.add       = csa.add;
+	this.remove    = csa.remove;
 }

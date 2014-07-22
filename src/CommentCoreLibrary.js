@@ -19,7 +19,7 @@ Array.prototype.bsearch = function(what,how){
 	var count = 0;
 	var high = this.length - 1;
 	while(low<=high){
-		i = Math.floor((high + low + 1)/2);
+		i = ~~((high + low + 1)/2);
 		count++;
 		if(how(what,this[i-1])>=0 && how(what,this[i])<0){
 			return i;
@@ -55,7 +55,6 @@ function CommentManager(stageObject){
 		top:new TopCommentSpaceAllocator(0,0),
 		bottom:new BottomCommentSpaceAllocator(0,0),
 		reverse:new ReverseCommentSpaceAllocator(0,0),
-		scrollbtm:new BottomScrollCommentSpaceAllocator(0,0)
 	};
 	/** Precompute the offset width **/
 	this.stage.width = this.stage.offsetWidth;
@@ -67,7 +66,7 @@ function CommentManager(stageObject){
 		cmt.mode = data.mode;
 		cmt.data = data;
 		if(cmt.mode === 17){
-			
+
 		}else{
 			cmt.appendChild(document.createTextNode(data.text));
 			cmt.innerText = data.text;
@@ -113,7 +112,7 @@ function CommentManager(stageObject){
 		__timer = 0;
 	};
 }
-	
+
 /** Public **/
 CommentManager.prototype.seek = function(time){
 	this.position = this.timeline.bsearch(time,function(a,b){
@@ -206,7 +205,7 @@ CommentManager.prototype.sendComment = function(data){
 	cmt.style.width = (cmt.width + 1) + "px";
 	cmt.style.height = (cmt.height - 3) + "px";
 	cmt.style.left = this.stage.width + "px";
-	
+
 	if(this.filter != null && !this.filter.beforeSend(cmt)){
 		this.stage.removeChild(cmt);
 		cmt = null;
@@ -215,56 +214,9 @@ CommentManager.prototype.sendComment = function(data){
 	switch(cmt.mode){
 		default:
 		case 1:{this.csa.scroll.add(cmt);}break;
-		case 2:{this.csa.scrollbtm.add(cmt);}break;
-		case 4:{this.csa.bottom.add(cmt);}break;
 		case 5:{this.csa.top.add(cmt);}break;
+		case 4:{this.csa.bottom.add(cmt);}break;
 		case 6:{this.csa.reverse.add(cmt);}break;
-		case 17:
-		case 7:{
-			if(cmt.data.position !== "relative"){
-				cmt.style.top = cmt.data.y + "px";
-				cmt.style.left = cmt.data.x + "px";
-			}else{
-				cmt.style.top = cmt.data.y * this.stage.height + "px";
-				cmt.style.left = cmt.data.x * this.stage.width + "px";
-			}
-			cmt.ttl = Math.round(data.duration * this.def.globalScale);
-			cmt.dur = Math.round(data.duration * this.def.globalScale);
-			if(data.rY !== 0 || data.rZ !== 0){
-				/** TODO: revise when browser manufacturers make up their mind on Transform APIs **/
-				var getRotMatrix = function(yrot, zrot) {
-					// Courtesy of @StarBrilliant, re-adapted to look better
-					var DEG2RAD = Math.PI/180;
-					var yr = yrot * DEG2RAD;
-					var zr = zrot * DEG2RAD;
-					var COS = Math.cos;
-					var SIN = Math.sin;
-					var matrix = [
-						COS(yr) * COS(zr)    , COS(yr) * SIN(zr)     , SIN(yr)  , 0, 
-						(-SIN(zr))           , COS(zr)               , 0        , 0, 
-						(-SIN(yr) * COS(zr)) , (-SIN(yr) * SIN(zr))  , COS(yr)  , 0,
-						0                    , 0                     , 0        , 1
-					];
-					// CSS does not recognize scientific notation (e.g. 1e-6), truncating it.
-					for(var i = 0; i < matrix.length;i++){
-						if(Math.abs(matrix[i]) < 0.000001){
-							matrix[i] = 0;
-						}
-					}
-					return "matrix3d(" + matrix.join(",") + ")";
-				}
-				cmt.style.transformOrigin = "0% 0%";
-				cmt.style.webkitTransformOrigin = "0% 0%";
-				cmt.style.OTransformOrigin = "0% 0%";
-				cmt.style.MozTransformOrigin = "0% 0%";
-				cmt.style.MSTransformOrigin = "0% 0%";
-				cmt.style.transform = getRotMatrix(data.rY, data.rZ);
-				cmt.style.webkitTransform = getRotMatrix(data.rY, data.rZ);
-				cmt.style.OTransform = getRotMatrix(data.rY, data.rZ);
-				cmt.style.MozTransform = getRotMatrix(data.rY, data.rZ);
-				cmt.style.MSTransform = getRotMatrix(data.rY, data.rZ);
-			}
-		}break;
 	}
 	this.runline.push(cmt);
 };
@@ -272,11 +224,9 @@ CommentManager.prototype.finish = function(cmt){
 	switch(cmt.mode){
 		default:
 		case 1:{this.csa.scroll.remove(cmt);}break;
-		case 2:{this.csa.scrollbtm.remove(cmt);}break;
-		case 4:{this.csa.bottom.remove(cmt);}break;
 		case 5:{this.csa.top.remove(cmt);}break;
+		case 4:{this.csa.bottom.remove(cmt);}break;
 		case 6:{this.csa.reverse.remove(cmt);}break;
-		case 7:break;
 	}
 };
 /** Static Functions **/
@@ -295,19 +245,8 @@ CommentManager.prototype.onTimerEvent = function(timePassed,cmObj){
 			if(cmt.dur == null)
 				cmt.dur = 4000;
 			if(cmt.data.alphaFrom != null && cmt.data.alphaTo != null){
-				cmt.style.opacity = (cmt.data.alphaFrom - cmt.data.alphaTo) * 
+				cmt.style.opacity = (cmt.data.alphaFrom - cmt.data.alphaTo) *
 					(cmt.ttl/cmt.dur) + cmt.data.alphaTo;
-			}
-			if(cmt.mode == 7 && cmt.data.movable){
-				var posT = Math.min(Math.max(cmt.dur - cmt.data.moveDelay - cmt.ttl,0),
-					cmt.data.moveDuration) / cmt.data.moveDuration;
-				if(cmt.data.position !== "relative"){
-					cmt.style.top = ((cmt.data.toY - cmt.data.y) * posT + cmt.data.y) + "px";
-					cmt.style.left= ((cmt.data.toX - cmt.data.x) * posT + cmt.data.x) + "px";
-				}else{
-					cmt.style.top = (((cmt.data.toY - cmt.data.y) * posT + cmt.data.y) * cmObj.stage.height) + "px";
-					cmt.style.left= (((cmt.data.toX - cmt.data.x) * posT + cmt.data.x) * cmObj.stage.width) + "px";
-				}
 			}
 		}
 		if(cmObj.filter != null){
