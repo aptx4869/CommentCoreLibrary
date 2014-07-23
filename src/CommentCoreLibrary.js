@@ -1,8 +1,8 @@
-/******
-* Comment Core For HTML5 VideoPlayers
-* Author : Jim Chen
-* Licensing : MIT License
-******/
+/*!
+ * Comment Core For HTML5 VideoPlayers
+ * Copyright (c) 2014 Jim Chen
+ * License: MIT
+ */
 Array.prototype.remove = function(obj){
 	for(var a = 0; a < this.length;a++)
 		if(this[a] == obj){
